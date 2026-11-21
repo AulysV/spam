@@ -25,7 +25,31 @@ Binary classification of raw emails as SPAM or HAM.
 
 After a few research on the Internet, the best data for this assignment seems to be the "Eron Spam" dataset (#link("https://pages.aueb.gr/users/ion/data/enron-spam/readme.txt")[→ readme ←]).
 
-It originally contains 6 folders (from 6 eployees, classified as )
+It originally contains 6 folders (from 6 eployees, classified as ham or spam). I took the 2 first data folders (eron1 and eron2) and combined them in the `data` folder as `ham` and `spam` in separate folders with the Power Rename tool from Microsoft Power Tools.
+
+The test folder is 15 emails from eron3 (10 ham and 5 spams), to simulate the corrector's test.
+
+= Choice of the algorithms
+
+I chose to use Naive Bayes, wich seems to be the best algorithm seen in class to classify text.
+
+But I will try to code a Perceptron first in order to see how to manipulate the data via Python. I will use a kernelised version for better accuracy.
+
+KNN doesn't generate any models and decision trees seem complicated for word-type datasets.
+
+= Using the data
+
+The first step is making the data usable. I lost a bit of my familiarity with Pyton, as I mostly used MATLAB the few last years. I am seeing this Assignment as an opportunity to reimprove my skills.
 
 
+
+= Kernel Perceptron
+
+First step :
+
+= Naive Bayes
+
+= Comparison with SVM
+
+= Conclusion
 
