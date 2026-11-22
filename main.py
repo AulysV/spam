@@ -42,7 +42,7 @@ if not(os.path.exists("data.npz")):
 
     for file in ham_files:
 
-        with open("data/ham/"+file, "r", encoding="utf-8", errors="ignore") as f: email = f.read()
+        with open("data/ham/"+file, "r", errors="ignore") as f: email = f.read()
         email_words = re.findall(r"[a-z]+", email.lower()) # email : ["list", "of", "strings"]
 
         all_emails.append(email_words)
@@ -159,3 +159,42 @@ accuracy2 = np.mean(y_predicted2 == y_val2)
 
 print(f"Accuracy of Bayes on validation data : {round(accuracy2*100, 2)}%")
 
+
+
+# =============== Test folder data (eron 3)
+
+test_files = sorted(os.listdir("test"))
+X_test = np.zeros((len(test_files), len(vocab)))
+
+for i, file in enumerate(test_files):
+    with open(os.path.join("test", file), "r", errors="ignore") as f:
+        email = f.read()
+    email_words = re.findall(r"[a-z]+", email.lower())
+
+    for mot in email_words:
+        if mot in vocab:
+            X_test[i, vocab[mot]] += 1
+
+# Test on Perceptron 
+
+norms_test = np.linalg.norm(X_test, axis=1, keepdims=True)
+norms_test[norms_test == 0] = 1
+X_test_n = X_test / norms_test
+
+X_test_n = np.hstack((X_test_n, np.ones((X_test_n.shape[0], 1))))
+
+pred_perceptron = np.where((X_test_n @ w) > 0, 1, -1)
+
+# Test on Naive Bayes 
+
+pred_bayes = models.bayes_test(X_test, params_bayes)
+
+# Print
+
+for i in range(len(test_files)):
+    # print(test_files[i], pred_perceptron[i], pred_bayes[i])
+    label_p = "spam" if pred_perceptron[i] == 1 else "ham"
+    label_b = "spam" if pred_bayes[i] == 1 else "ham"
+
+    # With nice formating 
+    print(f"{test_files[i]:<15} | Perceptron: {label_p} ({pred_perceptron[i]:+d}) | Bayes: {label_b} ({pred_bayes[i]:+d})")
