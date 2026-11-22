@@ -47,6 +47,8 @@ The first step is making the data usable. I lost a bit of my familiarity with Py
 
 First step :
 
+problème dimensions infines, donc on se contente du linéaire
+
 = Naive Bayes
 
 = Comparison with SVM
