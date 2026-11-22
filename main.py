@@ -28,8 +28,9 @@ spam_files = os.listdir("data/spam")
 vocab_total = {} # dictionnary with how often a word appears 
 
 expulse = { # words that are in every mail
-    "subject", "the", "and", "for", "that", "with", "you", "are", 
-    "this", "from", "have", "your", "not", "but", "was", "were", "can"
+    "subject", "the", "and"
+    # , "for", "that", "with", "you", "are", 
+    # "this", "from", "have", "your", "not", "but", "was", "were", "can"
 }
 
 # print(ham_files+spam_files)
@@ -137,8 +138,6 @@ accuracy = np.mean(y_predicted == y_val)
 print(f"Accuracy of Perceptron on validation data : {round(accuracy*100, 2)}%")
 
 
-
-
 # =============== Naive Bayes
 
 # np.random.seed(69)
@@ -163,38 +162,69 @@ print(f"Accuracy of Bayes on validation data : {round(accuracy2*100, 2)}%")
 
 # =============== Test folder data (eron 3)
 
-test_files = sorted(os.listdir("test"))
-X_test = np.zeros((len(test_files), len(vocab)))
+# test_files = os.listdir("test")
+# X_test = np.zeros((len(test_files), len(vocab)))
 
-for i, file in enumerate(test_files):
-    with open(os.path.join("test", file), "r", errors="ignore") as f:
-        email = f.read()
-    email_words = re.findall(r"[a-z]+", email.lower())
+# for i, file in enumerate(test_files):
+#     with open(os.path.join("test", file), "r", errors="ignore") as f:
+#         email = f.read()
+#     email_words = re.findall(r"[a-z]+", email.lower())
 
-    for mot in email_words:
-        if mot in vocab:
-            X_test[i, vocab[mot]] += 1
+#     for mot in email_words:
+#         if mot in vocab:
+#             X_test[i, vocab[mot]] += 1
 
-# Test on Perceptron 
+# # Test on Perceptron 
 
-norms_test = np.linalg.norm(X_test, axis=1, keepdims=True)
-norms_test[norms_test == 0] = 1
-X_test_n = X_test / norms_test
+# norms_test = np.linalg.norm(X_test, axis=1, keepdims=True)
+# norms_test[norms_test == 0] = 1
+# X_test_n = X_test / norms_test
 
-X_test_n = np.hstack((X_test_n, np.ones((X_test_n.shape[0], 1))))
+# X_test_n = np.hstack((X_test_n, np.ones((X_test_n.shape[0], 1))))
 
-pred_perceptron = np.where((X_test_n @ w) > 0, 1, -1)
+# pred_perceptron = np.where((X_test_n @ w) > 0, 1, -1)
 
-# Test on Naive Bayes 
+# # Test on Naive Bayes 
 
-pred_bayes = models.bayes_test(X_test, params_bayes)
+# pred_bayes = models.bayes_test(X_test, params_bayes)
 
-# Print
+# # Print
 
-for i in range(len(test_files)):
-    # print(test_files[i], pred_perceptron[i], pred_bayes[i])
-    label_p = "spam" if pred_perceptron[i] == 1 else "ham"
-    label_b = "spam" if pred_bayes[i] == 1 else "ham"
+# for i in range(len(test_files)):
+#     # print(test_files[i], pred_perceptron[i], pred_bayes[i])
+#     label_p = "spam" if pred_perceptron[i] == 1 else "ham "
+#     label_b = "spam" if pred_bayes[i] == 1 else "ham "
 
-    # With nice formating 
-    print(f"{test_files[i]:<15} | Perceptron: {label_p} ({pred_perceptron[i]:+d}) | Bayes: {label_b} ({pred_bayes[i]:+d})")
+#     # With nice formating ATTENTION HAM 0 NOT -1
+#     print(f"{test_files[i]:<32} | Perceptron: {label_p} ({int(0.5*(pred_perceptron[i]+1)):d}) | Bayes: {label_b} ({int(0.5*(pred_bayes[i]+1)):d})")
+
+
+# included in a function + modifying the -1 into a 0 before the print
+
+def predict(folder="test"):
+    test_files = os.listdir("test")
+    X_test = np.zeros((len(test_files), len(vocab)))
+
+    for i, file in enumerate(test_files):
+        with open(os.path.join(folder, file), "r", errors="ignore") as f:
+            email = f.read()
+        for mot in re.findall(r"[a-z]+", email.lower()):
+            if mot in vocab:
+                X_test[i, vocab[mot]] += 1
+
+    # Perceptron
+    norms_test = np.linalg.norm(X_test, axis=1, keepdims=True)
+    norms_test[norms_test == 0] = 1
+    X_test_n = np.hstack((X_test / norms_test, np.ones((X_test.shape[0], 1))))
+    pred_perceptron = np.where(X_test_n @ w > 0, 1, 0)
+
+    # Naive Bayes
+    pred_bayes = np.where(models.bayes_test(X_test, params_bayes) == 1, 1, 0)
+
+    return test_files, pred_perceptron, pred_bayes
+
+
+if __name__ == "__main__":
+    files, pp, pb = predict()
+    for i in range(len(files)):
+        print(f"{files[i]:<32} | Perceptron: {pp[i]} | Bayes: {pb[i]}")

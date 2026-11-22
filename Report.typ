@@ -51,7 +51,10 @@ problème dimensions infines, donc on se contente du linéaire
 
 = Naive Bayes
 
-= Comparison with SVM
+
+= Implementing procedure
+
+
 
 = Conclusion
 

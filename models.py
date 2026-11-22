@@ -24,6 +24,9 @@ def perceptron(X, y, max_aliens=20): # 20 max wrongly classed points (20 arbitra
 
     return w
 
+def perceptron_test(X, w):
+    return np.where(X @ w > 0, 1, -1)
+
 
 def bayes_train(X, y):
 
