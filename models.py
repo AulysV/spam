@@ -8,7 +8,7 @@ import numpy as np
 #     if tipe == "rbf":
 #         return np.exp(-gamma * np.sum((X1 - X2) ** 2))
 
-def perceptron(X, y, max_aliens=50): # 50 max wrongly classed points
+def perceptron(X, y, max_aliens=20): # 20 max wrongly classed points (20 arbitrarely found to be the best)
 
     w = np.zeros(X.shape[1])
 
@@ -23,3 +23,31 @@ def perceptron(X, y, max_aliens=50): # 50 max wrongly classed points
             break
 
     return w
+
+
+def bayes_train(X, y):
+
+    # log priors 
+    pone = np.log(np.mean(y == 1))
+    mone = np.log(np.mean(y == -1))
+
+    # log likelihoods 
+    count_pone = np.sum(X[y == 1], axis=0) + 1
+    like_pone = np.log(count_pone / np.sum(count_pone))
+
+    count_mone = np.sum(X[y == -1], axis=0) + 1
+    like_mone = np.log(count_mone / np.sum(count_mone))
+
+    return pone, mone, like_pone, like_mone
+
+def bayes_test(X, param):
+
+    pone, mone, like_pone, like_mone = param
+
+    # y = argmax (logprior + sum xloglikelihoods)
+    isspam = pone + X @ like_pone
+    isham = mone + X @ like_mone
+    # y = np.sign(isham - isspam)
+    y = np.where(isspam > isham, 1, -1)
+
+    return  y
